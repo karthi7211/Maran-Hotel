@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - Restaurant Live View</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Customer Specific Styles */
+        body {
+            background-color: #f5f5f5;
+            color: #1a1a1a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .customer-container {
+            width: 100%;
+            margin: 0 auto;
+            padding-bottom: 80px;
+        }
+
+        /* Header */
+        .app-header {
+            background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #444;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .app-header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .app-header h1 .brand {
+            color: #c9a961;
+            /* Muted gold */
+        }
+
+        .app-header p {
+            margin: 5px 0 0 0;
+            font-size: 0.9rem;
+            color: #bbb;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(40, 40, 40, 0.98);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid #555;
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-item {
+            color: #aaa;
+            text-align: center;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 8px 20px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .nav-item.active {
+            color: #c9a961;
+            background: rgba(201, 169, 97, 0.1);
+        }
+
+        .nav-icon {
+            font-size: 1.3rem;
+        }
+
+        /* View Sections */
+        .view-section {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 1.5rem;
+            color: #2c2c2c;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        /* Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .menu-card {
+            background: #ffffff;
+            border: 1px solid #d0d0d0;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .menu-card:hover {
+            transform: translateY(-3px);
+            border-color: #c9a961;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .menu-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .menu-card-content {
+            padding: 15px;
+        }
+
+        .menu-card h3 {
+            margin: 0 0 8px 0;
+            color: #2c2c2c;
+            font-size: 1.1rem;
+        }
+
+        .menu-card .category {
+            display: inline-block;
+            background: #f0f0f0;
+            color: #666;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+        }
+
+        .menu-card .description {
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .menu-card .price {
+            color: #c9a961;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        /* Table Grid */
+        .tables-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .table-card {
+            background: #ffffff;
+            border: 2px solid #d0d0d0;
+            border-radius: 12px;
+            padding: 20px 10px;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .table-card h3 {
+            font-size: 1.8rem;
+            margin: 0 0 5px 0;
+            font-weight: 700;
+            color: #2c2c2c;
+        }
+
+        .table-card .status {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table-card.available {
+            border-color: #4caf50;
+            background: linear-gradient(135deg, #f1f8f4, #ffffff);
+        }
+
+        .table-card.available h3 {
+            color: #2e7d32;
+        }
+
+        .table-card.available .status {
+            color: #2e7d32;
+        }
+
+        .table-card.occupied {
+            opacity: 0.5;
+            background: #f5f5f5;
+        }
+
+        .table-card.occupied h3 {
+            color: #999;
+        }
+
+        .table-card.occupied .status {
+            color: #999;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.available {
+            background: #4caf50;
+        }
+
+        .legend-dot.occupied {
+            background: #999;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="customer-container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1><span class="brand">MAARAN</span> HOTEL</h1>
+            <p>Authentic South Indian Cuisine</p>
+        </header>
+
+        <!-- Menu View (Default) -->
+        <section id="menu-view" class="view-section active">
+            <h2 class="section-title">Today's Menu</h2>
+            <div id="customer-menu-grid" class="menu-grid">
+                <p class="empty-state">Loading menu...</p>
+            </div>
+        </section>
+
+        <!-- Tables View -->
+        <section id="tables-view" class="view-section">
+            <h2 class="section-title">Table Availability</h2>
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-dot available"></span> Available
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot occupied"></span> Occupied
+                </div>
+            </div>
+            <div id="customer-tables-grid" class="tables-grid">
+                <p class="empty-state">Loading tables...</p>
+            </div>
+        </section>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="switchView('menu')">
+                <span class="nav-icon">🍽️</span>
+                <span>Menu</span>
+            </div>
+            <div class="nav-item" onclick="switchView('tables')">
+                <span class="nav-icon">🪑</span>
+                <span>Tables</span>
+            </div>
+            <div class="nav-item" onclick="handleLogout()">
+                <span class="nav-icon">🚪</span>
+                <span>Logout</span>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        function switchView(view) {
+            // Hide all views
+            document.querySelectorAll('.view-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Remove active from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Show selected view
+            if (view === 'menu') {
+                document.getElementById('menu-view').classList.add('active');
+                document.querySelectorAll('.nav-item')[0].classList.add('active');
+            } else if (view === 'tables') {
+                document.getElementById('tables-view').classList.add('active');
+                document.querySelectorAll('.nav-item')[1].classList.add('active');
+            }
+        }
+    </script>
+
+    <!-- Scripts -->
+    <script type="module" src="customer.js"></script>
+</body>
+
+</html>

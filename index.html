@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashier Billing System</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <div class="header-content">
+            <h1>🍽️ Cashier Billing System</h1>
+            <div class="header-info">
+                <nav class="main-nav">
+                    <button id="cashier-view-btn" class="nav-btn active">Cashier</button>
+                    <button id="reports-view-btn" class="nav-btn">Reports</button>
+                    <button id="menu-manage-btn" class="nav-btn">Manage Menu</button>
+                </nav>
+                <span id="current-time"></span>
+                <button onclick="handleAdminLogout()" class="nav-btn"
+                    style="background: #dc3545; color: white; border: none;">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Cashier View -->
+        <div id="cashier-view" class="view-container">
+            <div class="cashier-container">
+                <!-- Menu Section -->
+                <section class="menu-section">
+                    <div class="section-header">
+                        <h2>Select Items</h2>
+                        <div class="category-filters">
+                            <button class="filter-btn active" data-category="all">All</button>
+                            <button class="filter-btn" data-category="South Indian">South Indian</button>
+                            <button class="filter-btn" data-category="North Indian">North Indian</button>
+                            <button class="filter-btn" data-category="Beverages">Beverages</button>
+                            <button class="filter-btn" data-category="Meals">Meals</button>
+                        </div>
+                    </div>
+                    <div id="menu-container" class="menu-grid"></div>
+                </section>
+
+                <!-- Cart Section -->
+                <section class="cart-section">
+                    <div class="cart-header">
+                        <h3>🧾 Current Order</h3>
+                        <button id="clear-cart-btn" class="btn btn-clear">Clear All</button>
+                    </div>
+                    <div id="cart-items" class="cart-items"></div>
+                    <div class="cart-summary">
+                        <div class="total-display">
+                            <span class="total-label">Total Amount:</span>
+                            <span id="cart-total" class="total-amount">₹0</span>
+                        </div>
+                        <div class="cart-actions">
+                            <button id="download-invoice-btn" class="btn btn-secondary" disabled>Download
+                                Invoice</button>
+                            <button id="pay-now-btn" class="btn btn-primary" disabled>Pay Now (QR)</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Reports View -->
+        <div id="reports-view" class="view-container" style="display: none;">
+            <div class="reports-container">
+                <div class="section-header">
+                    <h2>Sales Reports</h2>
+                </div>
+                <div class="report-tabs">
+                    <button class="tab-btn active" data-tab="daily">Daily</button>
+                    <button class="tab-btn" data-tab="monthly">Monthly</button>
+                    <button class="tab-btn" data-tab="annual">Annual</button>
+                </div>
+
+                <div id="daily-report" class="report-tab-content active">
+                    <div class="report-controls">
+                        <input type="date" id="daily-date" class="date-input">
+                        <button id="generate-daily-btn" class="btn btn-primary">Generate Report</button>
+                        <button id="download-daily-btn" class="btn btn-secondary" style="display: none;">Download
+                            PDF</button>
+                    </div>
+                    <div id="daily-report-content" class="report-display"></div>
+                </div>
+
+                <div id="monthly-report" class="report-tab-content">
+                    <div class="report-controls">
+                        <select id="monthly-month" class="month-select"></select>
+                        <select id="monthly-year" class="year-select"></select>
+                        <button id="generate-monthly-btn" class="btn btn-primary">Generate Report</button>
+                        <button id="save-monthly-btn" class="btn btn-success" style="display: none;">Save to
+                            Database</button>
+                        <button id="download-monthly-btn" class="btn btn-secondary" style="display: none;">Download
+                            PDF</button>
+                    </div>
+                    <div id="monthly-report-content" class="report-display"></div>
+                </div>
+
+                <div id="annual-report" class="report-tab-content">
+                    <div class="report-controls">
+                        <select id="annual-year" class="year-select"></select>
+                        <button id="generate-annual-btn" class="btn btn-primary">Generate Report</button>
+                        <button id="download-annual-btn" class="btn btn-secondary" style="display: none;">Download
+                            PDF</button>
+                    </div>
+                    <div id="annual-report-content" class="report-display"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu Management View -->
+        <div id="menu-manage-view" class="view-container" style="display: none;">
+            <div class="menu-manage-container">
+                <div class="section-header">
+                    <h2>Menu Management</h2>
+                    <button id="add-new-item-btn" class="btn btn-primary">Add New Item</button>
+                </div>
+                <div id="menu-manage-grid" class="menu-manage-grid"></div>
+            </div>
+        </div>
+
+        <!-- Invoice Modal -->
+        <div id="invoice-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Invoice</h3>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div id="invoice-content" class="bill-content"></div>
+                <div class="modal-actions">
+                    <button id="print-invoice-btn" class="btn btn-secondary">Print Invoice</button>
+                    <button id="download-invoice-pdf-btn" class="btn btn-primary">Download PDF</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment QR Modal -->
+        <div id="payment-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Payment QR Code</h3>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div id="qr-code-container" class="qr-container">
+                    <h4>Scan to Pay</h4>
+                    <div id="qr-code"></div>
+                    <p class="qr-instruction">Show this QR code to customer for payment</p>
+                    <div class="payment-amount">
+                        <span>Amount: </span>
+                        <span id="payment-amount" class="total-amount">₹0</span>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button id="payment-complete-btn" class="btn btn-primary">Payment Complete</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add/Edit Item Modal -->
+        <div id="item-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="item-modal-title">Add Menu Item</h3>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <form id="item-form" class="item-form">
+                    <div class="form-group">
+                        <label for="item-name">Name:</label>
+                        <input type="text" id="item-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-price">Price (₹):</label>
+                        <input type="number" id="item-price" step="1" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-description">Description:</label>
+                        <textarea id="item-description" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-category">Category:</label>
+                        <select id="item-category" required>
+                            <option value="">Select Category</option>
+                            <option value="South Indian">South Indian</option>
+                            <option value="North Indian">North Indian</option>
+                            <option value="Beverages">Beverages</option>
+                            <option value="Meals">Meals</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-image">Image URL:</label>
+                        <input type="text" id="item-image" placeholder="Enter image URL or leave blank for default">
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="item-available" checked>
+                            Available
+                        </label>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeItemModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Item</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <script type="module" src="app.js"></script>
+</body>
+
+</html>

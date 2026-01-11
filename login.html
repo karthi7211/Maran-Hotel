@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Maaran Hotel</title>
+    <link rel="stylesheet" href="login-styles.css">
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1><span class="brand">MAARAN</span> HOTEL</h1>
+            <p>Select your role to continue</p>
+        </div>
+
+        <div class="login-body">
+            <!-- Role Selector -->
+            <div class="role-selector">
+                <button class="role-btn active" onclick="selectRole('admin')">
+                    <span class="icon">👨‍💼</span>
+                    Admin
+                </button>
+                <button class="role-btn" onclick="selectRole('waiter')">
+                    <span class="icon">👨‍🍳</span>
+                    Waiter
+                </button>
+                <button class="role-btn" onclick="selectRole('customer')">
+                    <span class="icon">👤</span>
+                    Customer
+                </button>
+            </div>
+
+            <div class="error-message" id="error-message"></div>
+
+            <!-- Admin Login Form -->
+            <form class="login-form active" id="admin-form" onsubmit="handleAdminLogin(event)">
+                <div class="form-group">
+                    <label>Admin ID</label>
+                    <input type="text" id="admin-id" placeholder="Enter admin ID" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="admin-password" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="btn-login">Login as Admin</button>
+            </form>
+
+            <!-- Waiter Login Form -->
+            <form class="login-form" id="waiter-form" onsubmit="handleWaiterLogin(event)">
+                <div class="form-group">
+                    <label>Waiter ID</label>
+                    <input type="text" id="waiter-id" placeholder="Enter waiter ID" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="waiter-password" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="btn-login">Login as Waiter</button>
+            </form>
+
+            <!-- Customer Login Form -->
+            <div class="login-form" id="customer-form">
+                <form id="customer-login-form" onsubmit="handleCustomerLogin(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="customer-email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="customer-password" placeholder="Enter password" required>
+                    </div>
+                    <button type="submit" class="btn-login">Login</button>
+                </form>
+
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+
+                <button type="button" class="google-btn" onclick="handleGoogleRegister()">
+                    <svg width="20" height="20" viewBox="0 0 20 20">
+                        <path fill="#4285F4"
+                            d="M19.6 10.23c0-.82-.1-1.42-.25-2.05H10v3.72h5.5c-.15.96-.74 2.31-2.04 3.22v2.45h3.16c1.89-1.73 2.98-4.3 2.98-7.34z" />
+                        <path fill="#34A853"
+                            d="M13.46 15.13c-.83.59-1.96 1-3.46 1-2.64 0-4.88-1.74-5.68-4.15H1.07v2.52C2.72 17.75 6.09 20 10 20c2.7 0 4.96-.89 6.62-2.42l-3.16-2.45z" />
+                        <path fill="#FBBC05"
+                            d="M3.99 10c0-.69.12-1.35.32-1.97V5.51H1.07A9.973 9.973 0 000 10c0 1.61.39 3.14 1.07 4.49l3.24-2.52c-.2-.62-.32-1.28-.32-1.97z" />
+                        <path fill="#EA4335"
+                            d="M10 3.88c1.88 0 3.13.81 3.85 1.48l2.84-2.76C14.96.99 12.7 0 10 0 6.09 0 2.72 2.25 1.07 5.51l3.24 2.52C5.12 5.62 7.36 3.88 10 3.88z" />
+                    </svg>
+                    Register with Google
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Setup Modal -->
+    <div id="password-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Set Your Password</h3>
+            </div>
+            <div class="modal-body">
+                <p class="welcome-text">Welcome! Please create a password for your Maaran Hotel account.</p>
+                <form id="password-setup-form" onsubmit="handlePasswordSetup(event)">
+                    <div class="form-group">
+                        <label>Create Password</label>
+                        <input type="password" id="new-password" placeholder="Enter password (min 6 characters)"
+                            required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input type="password" id="confirm-password" placeholder="Re-enter password" required
+                            minlength="6">
+                    </div>
+                    <button type="submit" class="btn-login">Complete Registration</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Buffer Page -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loader-animation">
+                <div class="chef-hat">👨‍🍳</div>
+                <div class="pan">🍳</div>
+            </div>
+            <h2 id="loading-text">Preparing your experience...</h2>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <p class="loading-subtext">Your food is getting ready...</p>
+        </div>
+    </div>
+
+    <script type="module" src="login.js"></script>
+</body>
+
+</html>
